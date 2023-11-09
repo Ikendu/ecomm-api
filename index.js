@@ -4,6 +4,7 @@ const { default: mongoose } = require('mongoose')
 const User = require('./models/User')
 const bcrypt = require(`bcryptjs`)
 const jwt = require('jsonwebtoken')
+const cookieParser = require(`cookie-parser`)
 
 const salt = bcrypt.genSaltSync(10)
 const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
@@ -12,6 +13,7 @@ const app = express()
 
 app.use(cors({ credentials: true, origin: 'http://localhost:5173' }))
 app.use(express.json())
+app.use(cookieParser())
 
 mongoose.connect(
   `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
@@ -36,7 +38,7 @@ app.post(`/login`, async (req, res) => {
     //login
     // let token = await jwt.sign({ email, id: userDoc._id }, secretJwt)
     // res.json(token)
-    jwt.sign({ name, id: userDoc._id }, secretJwt, {}, (err, token) => {
+    jwt.sign({ name, id: userDoc._id, email: userDoc.email }, secretJwt, {}, (err, token) => {
       if (err) throw err
       else {
         res.cookie(`token`, token).json(`ok`)
@@ -45,6 +47,15 @@ app.post(`/login`, async (req, res) => {
   } else {
     res.status(400).json(`Wrong Credentials`)
   }
+})
+
+//to use cookie(name) on the Navbar
+app.get(`/profile`, (req, res) => {
+  const { token } = req.cookies
+  jwt.verify(token, secretJwt, {}, (err, info) => {
+    if (err) throw err
+    else res.json(info)
+  })
 })
 
 app.listen(4000)
