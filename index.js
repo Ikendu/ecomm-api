@@ -10,7 +10,7 @@ const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
 
 const app = express()
 
-app.use(cors())
+app.use(cors({ credentials: true, origin: 'http://localhost:5173' }))
 app.use(express.json())
 
 mongoose.connect(
@@ -28,16 +28,20 @@ app.post(`/register`, async (req, res) => {
   }
 })
 
-let name = ``
 app.post(`/login`, async (req, res) => {
-  const { email, password } = req.body
-  const userDoc = await User.findOne({ email })
-  name = userDoc.name
+  const { name, password } = req.body
+  const userDoc = await User.findOne({ name })
   const checker = bcrypt.compareSync(password, userDoc.password)
   if (checker) {
     //login
-    jwt.sign({ username, id: userDoc._id }, secretJwt, {}, (err, token))
-    res.json(token)
+    // let token = await jwt.sign({ email, id: userDoc._id }, secretJwt)
+    // res.json(token)
+    jwt.sign({ name, id: userDoc._id }, secretJwt, {}, (err, token) => {
+      if (err) throw err
+      else {
+        res.cookie(`token`, token).json(`ok`)
+      }
+    })
   } else {
     res.status(400).json(`Wrong Credentials`)
   }
