@@ -28,6 +28,21 @@ app.post(`/register`, async (req, res) => {
   }
 })
 
+let name = ``
+app.post(`/login`, async (req, res) => {
+  const { email, password } = req.body
+  const userDoc = await User.findOne({ email })
+  name = userDoc.name
+  const checker = bcrypt.compareSync(password, userDoc.password)
+  if (checker) {
+    //login
+    jwt.sign({ username, id: userDoc._id }, secretJwt, {}, (err, token))
+    res.json(token)
+  } else {
+    res.status(400).json(`Wrong Credentials`)
+  }
+})
+
 app.listen(4000)
 
 //
