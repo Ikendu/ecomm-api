@@ -17,7 +17,16 @@ mongoose.connect(
   `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
 )
 
-
+app.post(`/register`, async (req, res) => {
+  const { name, email, password } = req.body
+  const hash = bcrypt.hashSync(password, salt)
+  try {
+    const userDoc = await User.create({ name, email, password: hash })
+    res.json(userDoc)
+  } catch (e) {
+    res.status(400).json(e)
+  }
+})
 
 app.listen(4000)
 
