@@ -76,9 +76,15 @@ app.post(`/post`, uploadMd.single(`file`), async (req, res) => {
   const newPath = path + `.` + extension
   fs.renameSync(path, newPath)
 
-  const { product, price, content, cover, checker } = req.body
+  const { product, price, content } = req.body
 
-  const userPost = await Post.create({ product, price, content, cover: newPath, checker })
+  const userPost = await Post.create({
+    product,
+    price,
+    content,
+    cover: newPath,
+    checker: false,
+  })
   res.json(userPost)
 })
 
