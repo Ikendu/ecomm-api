@@ -79,13 +79,19 @@ app.post(`/post`, uploadMd.single(`file`), async (req, res) => {
   const { product, price, content } = req.body
 
   const userPost = await Post.create({
-    product,
+    name,
     price,
     content,
-    cover: newPath,
-    checker: false,
+    image: newPath,
+    count: 1,
+    added: false,
   })
   res.json(userPost)
+})
+
+app.get(`/products`, async (req, res) => {
+  const products = await Post.find()
+  res.json(products)
 })
 
 app.listen(4000)

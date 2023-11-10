@@ -4,11 +4,11 @@ const { Schema, model } = mongoose
 
 const PostSchema = new Schema(
   {
-    product: String,
+    name: String,
     price: Number,
     content: String,
-    cover: String,
-    checker: Boolean,
+    image: String,
+    added: Boolean,
   },
   {
     timestamps: true,
