@@ -8,6 +8,7 @@ const cookieParser = require(`cookie-parser`)
 const multer = require('multer')
 const uploadMd = multer({ dest: `uploads/` })
 const fs = require(`fs`)
+const Post = require('./models/Post')
 
 const salt = bcrypt.genSaltSync(10)
 const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
@@ -68,13 +69,17 @@ app.post(`/logout`, (req, res) => {
   res.cookie(`token`, ``).json(`ok`)
 })
 
-app.post(`/post`, uploadMd.single(`file`), (req, res) => {
+app.post(`/post`, uploadMd.single(`file`), async (req, res) => {
   const { originalname, path } = req.file
   const div = originalname.split(`.`)
   const extension = div[div.length - 1].toLowerCase()
   const newPath = path + `.` + extension
   fs.renameSync(path, newPath)
-  res.json({ extension })
+
+  const { product, price, content, cover, checker } = req.body
+
+  const userPost = await Post.create({ product, price, content, cover: newPath, checker })
+  res.json(userPost)
 })
 
 app.listen(4000)

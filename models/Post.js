@@ -8,7 +8,7 @@ const PostSchema = new Schema(
     price: Number,
     content: String,
     cover: String,
-    marker: Boolean,
+    checker: Boolean,
   },
   {
     timestamps: true,
