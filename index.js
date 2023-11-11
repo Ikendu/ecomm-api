@@ -18,6 +18,7 @@ const app = express()
 app.use(cors({ credentials: true, origin: 'http://localhost:5173' }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(`/uploads`, express.static(__dirname + `/uploads`))
 
 mongoose.connect(
   `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
@@ -76,22 +77,33 @@ app.post(`/post`, uploadMd.single(`file`), async (req, res) => {
   const newPath = path + `.` + extension
   fs.renameSync(path, newPath)
 
-  const { product, price, content } = req.body
-
-  const userPost = await Post.create({
-    name,
-    price,
-    content,
-    image: newPath,
-    count: 1,
-    added: false,
+  const { token } = req.cookies
+  jwt.verify(token, secretJwt, {}, async (err, info) => {
+    if (err) throw err
+    const { name, price, content } = req.body
+    const userPost = await Post.create({
+      name,
+      price,
+      content,
+      image: newPath,
+      count: 1,
+      added: false,
+      author: info.id,
+    })
+    res.json(userPost)
+    res.json(info)
   })
-  res.json(userPost)
 })
 
 app.get(`/products`, async (req, res) => {
-  const products = await Post.find()
+  const products = await Post.find().populate(`author`, [`name`, `email`]).sort({ createdAt: -1 })
+  //.limit(20)
   res.json(products)
+})
+app.get(`/product/:id`, async (req, res) => {
+  const { id } = req.params
+  const product = await Post.findById(id).populate(`author`, [`name`, `email`])
+  res.json(product)
 })
 
 app.listen(4000)
