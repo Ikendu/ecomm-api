@@ -95,6 +95,38 @@ app.post(`/post`, uploadMd.single(`file`), async (req, res) => {
   })
 })
 
+app.put(`/post`, uploadMd.single(`file`), async (req, res) => {
+  let newPath = null
+  if (req.file) {
+    const { originalname, path } = req.file
+    const div = originalname.split(`.`)
+    const extension = div[div.length - 1].toLowerCase()
+    newPath = path + `.` + extension
+    fs.renameSync(path, newPath)
+  }
+
+  const { token } = req.cookies
+  jwt.verify(token, secretJwt, {}, async (err, info) => {
+    if (err) throw err
+    const { id, name, price, content } = req.body
+    const postDoc = await Post.findById(id)
+    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id)
+    if (!isAuthor) {
+      res.status(400).json(`You are not the author`)
+    }
+    await postDoc.updateOne({
+      name,
+      price,
+      content,
+      image: newPath ? newPath : postDoc.image,
+      //   count: 1,
+      //   added: false,
+      //   author: info.id,
+    })
+    res.json(postDoc)
+  })
+})
+
 app.get(`/products`, async (req, res) => {
   const products = await Post.find().populate(`author`, [`name`, `email`]).sort({ createdAt: -1 })
   //.limit(20)
@@ -104,6 +136,11 @@ app.get(`/product/:id`, async (req, res) => {
   const { id } = req.params
   const product = await Post.findById(id).populate(`author`, [`name`, `email`])
   res.json(product)
+})
+app.delete(`/delete/:id`, async (req, res) => {
+  const { id } = req.params
+  const result = await Post.findByIdAndDelete(id)
+  res.json(result)
 })
 
 app.listen(4000)
