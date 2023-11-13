@@ -15,7 +15,9 @@ const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
 
 const app = express()
 
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' }))
+app.use(
+  cors({ credentials: true, origin: ['http://localhost:5173', 'https://hairview.onrender.com'] })
+)
 app.use(express.json())
 app.use(cookieParser())
 app.use(`/uploads`, express.static(__dirname + `/uploads`))
