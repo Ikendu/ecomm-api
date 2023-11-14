@@ -23,7 +23,7 @@ dotenv.config()
 app.use(
   cors({
     origin: ['https://hairview.onrender.com'],
-    methods: ['POST', 'GET'],
+    methods: ['POST', 'GET', 'PUT'],
     credentials: true,
   })
 )
