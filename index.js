@@ -10,9 +10,6 @@ const fs = require(`fs`)
 const User = require('./models/User')
 const Post = require('./models/Post')
 const dotenv = require(`dotenv`)
-// const path = require('path')
-// const Post = require(path.join(__dirname, './models/Post'))
-// const User = require(path.join(__dirname, './models/User'))
 
 const salt = bcrypt.genSaltSync(10)
 const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
@@ -39,6 +36,12 @@ mongoose
   .connect(process.env.MONGO_URL)
   .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
   .catch((error) => console.log(error.message))
+
+app.all('/', function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+  next()
+})
 
 app.post(`/register`, async (req, res) => {
   const { name, email, password } = req.body
