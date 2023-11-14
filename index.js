@@ -16,15 +16,23 @@ const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
 const app = express()
 
 app.use(
-  cors({ credentials: true, origin: ['http://localhost:5173', 'https://hairview.onrender.com'] })
+  cors({
+    credentials: true,
+    origin: ['http://localhost:5173', 'https://hairview.onrender.com'],
+  })
 )
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(`/uploads`, express.static(__dirname + `/uploads`))
 
-mongoose.connect(
-  `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
-)
+const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
+const PORT = process.env.PORT || 4000
+
+mongoose
+  .connect(MONGO_URL)
+  .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
+  .catch((error) => console.log(error.message))
 
 app.post(`/register`, async (req, res) => {
   const { name, email, password } = req.body
@@ -145,6 +153,6 @@ app.delete(`/delete/:id`, async (req, res) => {
   res.json(result)
 })
 
-app.listen(4000)
+//app.listen(4000)
 
 //
