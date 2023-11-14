@@ -9,16 +9,18 @@ const multer = require('multer')
 const uploadMd = multer({ dest: `uploads/` })
 const fs = require(`fs`)
 const Post = require('./models/Post')
+const dotenv = require(`dotenv`)
 
 const salt = bcrypt.genSaltSync(10)
 const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
 
 const app = express()
+dotenv.config()
 
 app.use(
   cors({
     credentials: true,
-    origin: ['http://localhost:5173', 'https://hairview.onrender.com'],
+    origin: 'https://hairview.onrender.com',
   })
 )
 
@@ -26,11 +28,11 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(`/uploads`, express.static(__dirname + `/uploads`))
 
-const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
+// const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
 const PORT = process.env.PORT || 4000
 
 mongoose
-  .connect(MONGO_URL)
+  .connect(process.env.MONGO_URL)
   .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
   .catch((error) => console.log(error.message))
 
