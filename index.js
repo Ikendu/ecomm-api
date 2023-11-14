@@ -7,12 +7,12 @@ const cookieParser = require(`cookie-parser`)
 const multer = require('multer')
 const uploadMd = multer({ dest: `uploads/` })
 const fs = require(`fs`)
-// const User = require('./models/User')
-// const Post = require('./models/Post')
+const User = require('./models/User')
+const Post = require('./models/Post')
 const dotenv = require(`dotenv`)
-const path = require('path')
-const Post = require(path.join(__dirname, './models/Post'))
-const User = require(path.join(__dirname, './models/User'))
+// const path = require('path')
+// const Post = require(path.join(__dirname, './models/Post'))
+// const User = require(path.join(__dirname, './models/User'))
 
 const salt = bcrypt.genSaltSync(10)
 const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
@@ -24,6 +24,7 @@ app.use(
   cors({
     credentials: true,
     origin: 'https://hairview.onrender.com',
+    methods: ['POST', 'GET'],
   })
 )
 
