@@ -1,15 +1,18 @@
 const express = require(`express`)
 const cors = require(`cors`)
 const { default: mongoose } = require('mongoose')
-const User = require('./models/User')
 const bcrypt = require(`bcryptjs`)
 const jwt = require('jsonwebtoken')
 const cookieParser = require(`cookie-parser`)
 const multer = require('multer')
 const uploadMd = multer({ dest: `uploads/` })
 const fs = require(`fs`)
-const Post = require('./models/Post')
+// const User = require('./models/User')
+// const Post = require('./models/Post')
 const dotenv = require(`dotenv`)
+const path = require('path')
+const Post = require(path.join(__dirname, '../models/Post'))
+const User = require(path.join(__dirname, '../models/User'))
 
 const salt = bcrypt.genSaltSync(10)
 const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
@@ -28,7 +31,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(`/uploads`, express.static(__dirname + `/uploads`))
 
-// const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
+const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
 const PORT = process.env.PORT || 4000
 
 mongoose
@@ -131,9 +134,6 @@ app.put(`/post`, uploadMd.single(`file`), async (req, res) => {
       price,
       content,
       image: newPath ? newPath : postDoc.image,
-      //   count: 1,
-      //   added: false,
-      //   author: info.id,
     })
     res.json(postDoc)
   })
