@@ -17,31 +17,16 @@ const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
 const app = express()
 dotenv.config()
 
-app.use(
-  cors({
-    origin: ['https://hairview.onrender.com'],
-    methods: ['POST', 'GET', 'PUT'],
-    credentials: true,
-  })
-)
+app.use(cors({ origin: 'https://hairview.onrender.com' }))
+app.options('*', cors())
 
 app.use(express.json())
 app.use(cookieParser())
 app.use(`/uploads`, express.static(__dirname + `/uploads`))
 
 const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?retryWrites=true&w=majority`
-const PORT = process.env.PORT || 4000
 
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
-  .catch((error) => console.log(error.message))
-
-app.all('/', function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
-  next()
-})
+mongoose.connect(process.env.MONGO_URL)
 
 app.post(`/register`, async (req, res, next) => {
   const { name, email, password } = req.body
@@ -164,6 +149,9 @@ app.delete(`/delete/:id`, async (req, res, next) => {
   res.json(result)
   next()
 })
+
+const PORT = process.env.PORT || 4000
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
 //app.listen(4000)
 
