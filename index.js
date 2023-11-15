@@ -17,8 +17,17 @@ const secretJwt = `fsgsyuewy643873vncxm0q34kjd048,znahfuaoghdfj3400232`
 const app = express()
 dotenv.config()
 
-app.use(cors({ origin: 'https://hairview.onrender.com' }))
-app.options('*', cors())
+app.use(
+  cors({
+    origin: 'https://hairview.onrender.com',
+    credentials: true,
+  })
+)
+app.all('/', function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+  next()
+})
 
 app.use(express.json())
 app.use(cookieParser())
@@ -28,7 +37,7 @@ const MONGO_URL = `mongodb+srv://ecomm:11111234Aa@cluster0.cuu14a6.mongodb.net/?
 
 mongoose.connect(process.env.MONGO_URL)
 
-app.post(`/register`, async (req, res, next) => {
+app.post(`/register`, async (req, res) => {
   const { name, email, password } = req.body
   const hash = bcrypt.hashSync(password, salt)
   try {
@@ -151,8 +160,9 @@ app.delete(`/delete/:id`, async (req, res, next) => {
 })
 
 const PORT = process.env.PORT || 4000
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
-//app.listen(4000)
+if (PORT) {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+}
 
-//
+module.exports = app
